@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Seguimiento de contenido · Diluu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --blue:#3983ED; --orange:#FF9331; --green:#3CCB09; --pink:#E465F2; --ink:#313131;
+    --bg:#F6F8FB; --card:#fff; --line:#E7ECF3; --muted:#8A93A3;
+    --blue-soft:#EAF2FE; --pink-soft:#FBEAFE;
+    --radius:16px; --shadow:0 1px 2px rgba(49,49,49,.04),0 8px 24px rgba(49,49,49,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"DM Sans",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:24px 20px 80px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .dot-logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--pink));display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px}
+  .brand h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.01em}
+  .brand p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+  .src{display:flex;align-items:center;gap:10px}
+  .src .meta{font-size:11.5px;color:var(--muted);text-align:right}
+  .btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;font-size:13.5px;padding:9px 14px;border-radius:11px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .btn:hover{border-color:#cfd8e6}
+
+  .weekbar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:18px}
+  .weeknav{display:flex;align-items:center;gap:10px}
+  .arrow{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:18px;line-height:1;color:var(--ink)}
+  .arrow:hover{border-color:#cfd8e6}
+  .weeklabel{min-width:220px;text-align:center}
+  .weeklabel .wk{font-weight:700;font-size:16px}
+  .weeklabel .rng{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .scorering{display:flex;align-items:center;gap:12px}
+  .ring{--p:0;width:52px;height:52px;border-radius:50%;background:conic-gradient(var(--green) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;position:relative}
+  .ring::after{content:"";position:absolute;inset:6px;background:var(--card);border-radius:50%}
+  .ring b{position:relative;z-index:1;font-size:13px;font-weight:700}
+  .scoremeta .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .scoremeta .val{font-size:14px;font-weight:600}
+
+  .section-h{display:flex;align-items:baseline;gap:10px;margin:24px 4px 12px}
+  .section-h .num{font-size:12px;font-weight:700;color:#fff;background:var(--ink);width:22px;height:22px;border-radius:7px;display:grid;place-items:center}
+  .section-h h2{font-size:15.5px;margin:0;font-weight:700}
+  .section-h .cad{font-size:12px;color:var(--muted);font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+
+  .row{display:grid;grid-template-columns:1.6fr 90px 86px 14px;align-items:center;gap:10px;padding:13px 18px;border-top:1px solid var(--line)}
+  .row:first-child{border-top:none}
+  .row.head{padding:10px 18px;background:#FBFCFE;border-top:none}
+  .row.head span{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;text-align:center}
+  .row.head .lh{text-align:left}
+  .rname{font-weight:600;font-size:14px}
+  .rnote{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+  .cell{text-align:center}
+  .cell .clab{display:none}
+  .done{font-size:16px;font-weight:700}
+  .tgt{font-weight:700;font-size:14px;color:var(--muted)}
+  .status{width:12px;height:12px;border-radius:50%;background:var(--line);justify-self:center}
+  .status.go{background:var(--green)} .status.mid{background:var(--orange)}
+
+  .month-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--pink-soft)}
+  .month-h b{font-size:14px} .month-h span{font-size:12px;color:var(--muted)}
+  .report-row{display:flex;align-items:center;gap:10px;padding:13px 18px;border-top:1px solid var(--line);font-size:13.5px;font-weight:600}
+  .pill{font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px}
+  .pill.ok{background:#EAF9E3;color:#2c9a06} .pill.no{background:#FBEAEA;color:#c2410c}
+
+  .notes-box{padding:14px 18px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;color:var(--ink)}
+  .notes-box.empty{color:var(--muted)}
+
+  .chart-card{padding:16px 16px 14px}
+  .chart{width:100%;height:auto;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;padding-top:12px;border-top:1px solid var(--line)}
+  .leg{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:12.5px;font-weight:600;background:#FBFCFE;border:1px solid var(--line);border-radius:9px;padding:6px 11px;cursor:pointer;color:var(--ink)}
+  .leg:hover{border-color:#cfd8e6}
+  .leg i{width:12px;height:12px;border-radius:50%;flex:none}
+  .leg i.dash{width:14px;height:0;border-radius:0;border-top:2px dashed #313131;background:none!important}
+  .leg.off{opacity:.4} .leg.off i{filter:grayscale(1)}
+  .chart-hint{margin:10px 2px 0;font-size:12px;color:var(--muted)}
+
+  .banner{background:#FFF7E8;border:1px solid #F4D9A0;border-radius:var(--radius);padding:18px 20px;margin-bottom:18px}
+  .banner h3{margin:0 0 6px;font-size:15px} .banner p{margin:0 0 8px;font-size:13.5px;line-height:1.5}
+  .banner code{background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px}
+  .banner ol{margin:8px 0 0;padding-left:20px;font-size:13.5px;line-height:1.6}
+  .err{background:#FBEAEA;border-color:#F1B6B6}
+  .loading{text-align:center;padding:60px 0;color:var(--muted)}
+
+  @media (max-width:720px){
+    .row{grid-template-columns:1fr;gap:6px}
+    .row.head{display:none}
+    .cell{display:flex;align-items:center;justify-content:space-between}
+    .cell .clab{display:inline;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase}
+    .status{justify-self:start}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="dot-logo">D</div>
+      <div>
+        <h1>Seguimiento de contenido · Diluu</h1>
+        <p>Conectado a Google Sheets — solo lectura</p>
+      </div>
+    </div>
+    <div class="src">
+      <div class="meta" id="srcMeta"></div>
+      <button class="btn" id="btnRefresh">↻ Actualizar</button>
+    </div>
+  </div>
+  <div id="app"><div class="loading">Cargando datos del Sheet…</div></div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   CONFIGURACIÓN — edita solo estas dos cosas
+   ════════════════════════════════════════════════════════════════ */
+
+// 1) Enlace CSV de la pestaña "Registro" (lo que llena Daniela)
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSkxQs5DU4GCDR1SUxdxb2grINFxdItckqibchFH8c7yS8cNdoY83oGy89GzqrH_s-MuiWxVaTFBlpY/pub?gid=1770489249&single=true&output=csv";
+
+// 2) Enlace CSV de la pestaña "Metas" (déjalo vacío para usar los valores de abajo)
+const METAS_CSV_URL = "";
+
+// 3) Metas por defecto — solo se usan si NO conectas la pestaña "Metas" en el punto 2
+const METAS = {
+  videos: 4, graphics: 3, feed: 3, stories: 2,   // semanales
+  testimonios: 3, ugc: 3                           // mensuales
+};
+
+/* ════════════════════════════════════════════════════════════════
+   De aquí para abajo no necesitas tocar nada
+   ════════════════════════════════════════════════════════════════ */
+
+const WEEKLY = {
+  videos:   { label: "Videos Verticales para ads", note: "Para campañas de ads." },
+  graphics: { label: "Piezas gráficas y carruseles", note: "Estáticas y dinámicas." },
+  feed:     { label: "Publicaciones en feed", note: "Mezcla de vídeo y estático." },
+  stories:  { label: "Secuencias de Stories", note: "Diarias L–V." },
+};
+const MONTHLY = {
+  testimonios: { label: "Testimonios de familias", note: "Edición pro para ads." },
+  ugc:         { label: "Piezas UGC", note: "Coordinación + edición final." },
+};
+const SERIES_META = {
+  videos:   { short: "Videos ads", color: "#3983ED" },
+  graphics: { short: "Gráficas",   color: "#FF9331" },
+  feed:     { short: "Feed",       color: "#3CCB09" },
+  stories:  { short: "Stories",    color: "#E465F2" },
+};
+// palabras clave para reconocer las columnas del Sheet (en minúscula)
+const COL_KEYS = {
+  fecha:       ["fecha", "semana", "lunes"],
+  videos:      ["video"],
+  graphics:    ["gráfic", "grafic", "carrus"],
+  feed:        ["feed", "publicacion", "post"],
+  stories:     ["stor"],
+  testimonios: ["testimon"],
+  ugc:         ["ugc"],
+  informe:     ["informe", "reporte"],
+  notas:       ["nota", "comentar"],
+};
+const TREND_WEEKS = 8;
+
+let byWeek = {};       // weekKey -> aggregated record
+let curMonday = null;
+let hidden = new Set();
+let lastFetch = null;
+
+/* ---------- date helpers ---------- */
+function mondayOf(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setHours(0,0,0,0); x.setDate(x.getDate()-day); return x; }
+function isoWeek(d){ const t=new Date(d); t.setHours(0,0,0,0); t.setDate(t.getDate()+3-((t.getDay()+6)%7)); const w1=new Date(t.getFullYear(),0,4); const w=1+Math.round(((t-w1)/86400000-3+((w1.getDay()+6)%7))/7); return {year:t.getFullYear(),week:w}; }
+function weekKey(m){ const i=isoWeek(m); return i.year+"-W"+String(i.week).padStart(2,"0"); }
+function fmtRange(m){ const s=new Date(m); s.setDate(s.getDate()+6); const f=x=>x.toLocaleDateString("es-CO",{day:"numeric",month:"short"}); return f(m)+" – "+f(s); }
+const MONTHS=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+function monthName(m){ return MONTHS[m.getMonth()]+" "+m.getFullYear(); }
+function sameMonth(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth(); }
+
+function parseDate(s){
+  if(!s) return null;
+  s=String(s).trim();
+  let m;
+  if((m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return new Date(+m[1],+m[2]-1,+m[3]);
+  if((m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) return new Date(+m[3],+m[2]-1,+m[1]); // DD/MM/YYYY
+  if((m=s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/))) return new Date(+m[3],+m[2]-1,+m[1]);
+  const d=new Date(s); return isNaN(d)?null:d;
+}
+function toInt(v){ const n=parseInt(String(v||"").replace(/[^\d-]/g,""),10); return isNaN(n)?0:n; }
+function truthy(v){ return /^(s[ií]|true|verdadero|x|1|yes)/i.test(String(v||"").trim()); }
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  const rows=[]; let row=[], cur="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else{
+      if(c==='"') q=true;
+      else if(c===','){ row.push(cur); cur=""; }
+      else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=""; }
+      else if(c==='\r'){ /* skip */ }
+      else cur+=c;
+    }
+  }
+  if(cur!==""||row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+
+function buildIndex(header){
+  const idx={};
+  header.forEach((h,i)=>{
+    const low=String(h).toLowerCase().trim();
+    for(const key in COL_KEYS){
+      if(idx[key]!==undefined) continue;
+      if(COL_KEYS[key].some(kw=>low.includes(kw))){ idx[key]=i; break; }
+    }
+  });
+  return idx;
+}
+
+function ingest(text){
+  const rows=parseCSV(text).filter(r=>r.some(c=>String(c).trim()!==""));
+  if(!rows.length) throw new Error("Sheet vacío");
+  const idx=buildIndex(rows[0]);
+  if(idx.fecha===undefined) throw new Error("No encuentro la columna de Fecha/Semana");
+  byWeek={};
+  const contentCols=["videos","graphics","feed","stories","testimonios","ugc","informe","notas"];
+  for(let r=1;r<rows.length;r++){
+    const row=rows[r];
+    const d=parseDate(row[idx.fecha]); if(!d||isNaN(d)) continue;
+    // una fila con fecha pero sin nada en las demás columnas se ignora (fechas prellenadas)
+    const hasContent=contentCols.some(key=>idx[key]!==undefined && String(row[idx[key]]||"").trim()!=="");
+    if(!hasContent) continue;
+    const mon=mondayOf(d), k=weekKey(mon);
+    if(!byWeek[k]) byWeek[k]={monday:mon,videos:0,graphics:0,feed:0,stories:0,testimonios:0,ugc:0,informe:false,notas:[]};
+    const rec=byWeek[k];
+    ["videos","graphics","feed","stories","testimonios","ugc"].forEach(key=>{
+      if(idx[key]!==undefined) rec[key]+=toInt(row[idx[key]]);
+    });
+    if(idx.informe!==undefined && truthy(row[idx.informe])) rec.informe=true;
+    if(idx.notas!==undefined){ const nt=String(row[idx.notas]||"").trim(); if(nt) rec.notas.push(nt); }
+  }
+  // default week = la más reciente con datos, si no hoy
+  const keys=Object.keys(byWeek);
+  if(keys.length){
+    let latest=byWeek[keys[0]].monday;
+    keys.forEach(k=>{ if(byWeek[k].monday>latest) latest=byWeek[k].monday; });
+    curMonday=new Date(latest);
+  } else {
+    curMonday=mondayOf(new Date());
+  }
+}
+
+/* ---------- metas desde la pestaña "Metas" ---------- */
+const META_KEYS = ["videos","graphics","feed","stories","testimonios","ugc"];
+function ingestMetas(text){
+  const rows=parseCSV(text).filter(r=>r.some(c=>String(c).trim()!==""));
+  for(const row of rows){
+    const label=String(row[0]||"").toLowerCase().trim();
+    const raw=String(row[1]||"").trim();
+    if(raw==="") continue;
+    const val=toInt(raw);
+    if(String(val)==="" || isNaN(val)) continue;
+    for(const key of META_KEYS){
+      if(COL_KEYS[key].some(kw=>label.includes(kw))){ METAS[key]=val; break; }
+    }
+  }
+}
+
+/* ---------- compliance ---------- */
+function statusClass(a,t){ if(t<=0) return ""; if(a>=t) return "go"; if(a>0) return "mid"; return ""; }
+function weekRec(m){ return byWeek[weekKey(m)] || null; }
+function weeklyScore(rec){
+  let got=0,total=0;
+  for(const k in WEEKLY){ const t=METAS[k]; if(t<=0) continue; total+=t; got+=Math.min(rec?rec[k]:0,t); }
+  return total>0?Math.round(got/total*100):0;
+}
+function monthAgg(m){
+  const o={testimonios:0,ugc:0,informe:false};
+  for(const k in byWeek){ const r=byWeek[k]; if(sameMonth(r.monday,m)){ o.testimonios+=r.testimonios; o.ugc+=r.ugc; o.informe=o.informe||r.informe; } }
+  return o;
+}
+
+/* ---------- trend chart ---------- */
+function pctFor(rec,key){ if(!rec) return null; const t=METAS[key]; if(t<=0) return null; return Math.min(rec[key]/t,1)*100; }
+function pctTotal(rec){ if(!rec) return null; let s=0,n=0; for(const k in WEEKLY){ const p=pctFor(rec,k); if(p!==null){s+=p;n++;} } return n>0?s/n:null; }
+
+function buildChart(){
+  const W=760,H=300,padL=38,padR=14,padT=14,padB=34,plotW=W-padL-padR,plotH=H-padT-padB;
+  const weeks=[];
+  for(let i=TREND_WEEKS-1;i>=0;i--){ const m=new Date(curMonday); m.setDate(m.getDate()-i*7); weeks.push({wk:isoWeek(m).week,rec:weekRec(m)}); }
+  const n=weeks.length;
+  const x=i=>padL+(n===1?plotW/2:i*(plotW/(n-1)));
+  const y=p=>padT+(1-p/100)*plotH;
+  let grid="";
+  [0,25,50,75,100].forEach(p=>{ const yy=y(p); grid+=`<line x1="${padL}" y1="${yy.toFixed(1)}" x2="${W-padR}" y2="${yy.toFixed(1)}" stroke="#E7ECF3"/>`; grid+=`<text x="${padL-8}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#8A93A3">${p}%</text>`; });
+  let xlab=""; weeks.forEach((e,i)=>{ xlab+=`<text x="${x(i).toFixed(1)}" y="${H-12}" text-anchor="middle" font-size="11" fill="#8A93A3">S${e.wk}</text>`; });
+  const linePath=pts=>{ let d="",pen=false; pts.forEach(p=>{ if(p){ d+=(pen?" L":" M")+p.x.toFixed(1)+" "+p.y.toFixed(1); pen=true; } else pen=false; }); return d.trim(); };
+  const draw=(key,color,dash)=>{
+    if(hidden.has(key)) return "";
+    const pts=weeks.map((e,i)=>{ const p=key==="__total__"?pctTotal(e.rec):pctFor(e.rec,key); return p===null?null:{x:x(i),y:y(p)}; });
+    const path=linePath(pts); if(!path) return "";
+    const dots=pts.filter(Boolean).map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${key==="__total__"?0:3.5}" fill="${color}"/>`).join("");
+    return `<path d="${path}" fill="none" stroke="${color}" stroke-width="${key==="__total__"?2:2.5}" stroke-linejoin="round" stroke-linecap="round" ${dash?'stroke-dasharray="5 5"':""}/>${dots}`;
+  };
+  let series=""; for(const k in SERIES_META) series+=draw(k,SERIES_META[k].color); series+=draw("__total__","#313131",true);
+  let legend=""; for(const k in SERIES_META) legend+=`<button class="leg ${hidden.has(k)?"off":""}" data-skey="${k}"><i style="background:${SERIES_META[k].color}"></i>${SERIES_META[k].short}</button>`;
+  legend+=`<button class="leg ${hidden.has("__total__")?"off":""}" data-skey="__total__"><i class="dash"></i>Total</button>`;
+  const dataWeeks=weeks.filter(e=>e.rec).length;
+  const hint=dataWeeks<2?`<p class="chart-hint">Se irá llenando a medida que se registren más semanas en el Sheet.</p>`:"";
+  return `<div class="section-h"><h2>Tendencia de cumplimiento</h2><span class="cad">Últimas ${TREND_WEEKS} semanas</span></div>
+    <div class="card chart-card">
+      <svg viewBox="0 0 ${W} ${H}" class="chart" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Tendencia de cumplimiento">${grid}${series}${xlab}</svg>
+      <div class="legend">${legend}</div>${hint}
+    </div>`;
+}
+
+/* ---------- render ---------- */
+function rowHTML(group,key){
+  const meta=(group==="weekly"?WEEKLY:MONTHLY)[key];
+  const tgt=METAS[key];
+  const act=group==="weekly" ? (weekRec(curMonday)?weekRec(curMonday)[key]:0) : monthAgg(curMonday)[key];
+  return `<div class="row">
+    <div><div class="rname">${meta.label}</div><div class="rnote">${meta.note}</div></div>
+    <div class="cell"><span class="clab">Hecho</span><b class="done">${act}</b></div>
+    <div class="cell"><span class="clab">Meta</span><span class="tgt">${tgt}</span></div>
+    <div class="status ${statusClass(act,tgt)}"></div>
+  </div>`;
+}
+
+function render(){
+  const rec=weekRec(curMonday);
+  const wk=isoWeek(curMonday);
+  const score=weeklyScore(rec);
+  const head=`<div class="row head"><span class="lh">Entregable</span><span>Hecho</span><span>Meta</span><span></span></div>`;
+  const weeklyRows=Object.keys(WEEKLY).map(k=>rowHTML("weekly",k)).join("");
+  const monthlyRows=Object.keys(MONTHLY).map(k=>rowHTML("monthly",k)).join("");
+  const ma=monthAgg(curMonday);
+  const notas=rec&&rec.notas.length?rec.notas.join("\n"):"";
+
+  document.getElementById("app").innerHTML=`
+    <div class="weekbar">
+      <div class="weeknav">
+        <button class="arrow" id="prevWk">‹</button>
+        <div class="weeklabel"><div class="wk">Semana ${wk.week} · ${wk.year}</div><div class="rng">${fmtRange(curMonday)}</div></div>
+        <button class="arrow" id="nextWk">›</button>
+        <button class="btn" id="thisWk" style="margin-left:6px;border:1px solid var(--line)">Hoy</button>
+      </div>
+      <div class="scorering">
+        <div class="ring" style="--p:${score}"><b>${score}%</b></div>
+        <div class="scoremeta"><div class="lbl">Cumplimiento</div><div class="val">de la semana</div></div>
+      </div>
+    </div>
+
+    ${buildChart()}
+
+    <div class="section-h"><span class="num">1</span><h2>Producción y gestión de contenido</h2><span class="cad">Semanal</span></div>
+    <div class="card">${head}${weeklyRows}</div>
+
+    <div class="section-h"><span class="num">2</span><h2>Producción especial y colaboraciones</h2><span class="cad">Mensual</span></div>
+    <div class="card">
+      <div class="month-h"><b>Mes: ${monthName(curMonday)}</b><span>Acumulado del mes</span></div>
+      ${head}${monthlyRows}
+      <div class="report-row">Informe de rendimiento entregado
+        <span class="pill ${ma.informe?"ok":"no"}">${ma.informe?"Sí":"Pendiente"}</span>
+        <span style="font-weight:400;color:var(--muted);font-size:12px">· primeros 5 días del mes</span>
+      </div>
+    </div>
+
+    <div class="section-h"><span class="num">3</span><h2>Notas de la semana</h2></div>
+    <div class="card"><div class="notes-box ${notas?"":"empty"}">${notas?escapeHTML(notas):"Sin notas registradas para esta semana."}</div></div>
+  `;
+  wire();
+}
+function escapeHTML(s){ return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
+function wire(){
+  document.getElementById("prevWk").onclick=()=>{ curMonday=new Date(curMonday); curMonday.setDate(curMonday.getDate()-7); render(); };
+  document.getElementById("nextWk").onclick=()=>{ curMonday=new Date(curMonday); curMonday.setDate(curMonday.getDate()+7); render(); };
+  document.getElementById("thisWk").onclick=()=>{ curMonday=mondayOf(new Date()); render(); };
+  document.querySelectorAll(".leg").forEach(b=>b.onclick=()=>{ const k=b.dataset.skey; hidden.has(k)?hidden.delete(k):hidden.add(k); render(); });
+}
+
+/* ---------- load ---------- */
+function setupBanner(extraClass,html){ document.getElementById("app").innerHTML=`<div class="banner ${extraClass||""}">${html}</div>`; }
+
+async function fetchCSV(u){
+  const url=u+(u.includes("?")?"&":"?")+"_="+Date.now();
+  const res=await fetch(url);
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  return res.text();
+}
+async function fetchMetas(){
+  if(!METAS_CSV_URL) return;
+  try{ ingestMetas(await fetchCSV(METAS_CSV_URL)); }
+  catch(e){ console.warn("No pude leer la pestaña Metas, uso los valores por defecto:", e.message); }
+}
+
+async function load(){
+  if(!CSV_URL){
+    setupBanner("",`<h3>Falta conectar el Sheet</h3>
+      <p>Abre este archivo y pega tus enlaces CSV en las líneas <code>CSV_URL</code> y <code>METAS_CSV_URL</code> (arriba del todo del &lt;script&gt;).</p>
+      <ol>
+        <li>En tu Google Sheet: <b>Archivo → Compartir → Publicar en la web</b>.</li>
+        <li>Publica la pestaña <b>Registro</b> como <b>CSV</b> y pega el enlace en <code>CSV_URL</code>.</li>
+        <li>Publica la pestaña <b>Metas</b> como <b>CSV</b> y pega el enlace en <code>METAS_CSV_URL</code>.</li>
+      </ol>`);
+    return;
+  }
+  try{
+    await fetchMetas();                 // best-effort: si falla, usa metas por defecto
+    ingest(await fetchCSV(CSV_URL));
+    lastFetch=new Date();
+    document.getElementById("srcMeta").textContent="Actualizado "+lastFetch.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
+    render();
+  }catch(e){
+    setupBanner("err",`<h3>No pude leer el Sheet</h3>
+      <p>${escapeHTML(e.message)}. Verifica que la pestaña <b>Registro</b> esté <b>publicada en la web como CSV</b> y que el enlace en <code>CSV_URL</code> sea el correcto.</p>`);
+  }
+}
+
+document.getElementById("btnRefresh").onclick=load;
+load();
+setInterval(load, 5*60*1000); // refresca cada 5 min
+</script>
+</body>
+</html>
